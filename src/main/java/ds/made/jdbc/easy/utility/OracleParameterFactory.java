@@ -1,6 +1,8 @@
 package ds.made.jdbc.easy.utility;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import ds.made.jdbc.easy.model.Enums;
@@ -131,7 +133,11 @@ public class OracleParameterFactory
 	{
 		return new Parameter(name,INTEGER,Enums.PARAMETER_DIRECTION.RETURN);
 	}
-	
+
+	// -------------------------------------------------------------------------------------------------- //
+	// java.util.Date
+	// -------------------------------------------------------------------------------------------------- //
+
 	/**
 	 * Creates a Date parameter.
 	 * @param name
@@ -139,7 +145,7 @@ public class OracleParameterFactory
 	 */
 	public static Parameter dateParameter(String name)
 	{
-		return new Parameter(name,DATE);
+		return new Parameter(name,TIMESTAMP).setDateType(Enums.PARAMETER_DATE_TYPE.Util);
 	}
 
 	/**
@@ -150,7 +156,7 @@ public class OracleParameterFactory
 	 */
 	public static Parameter dateParameter(String name, Date value)
 	{
-		return new Parameter(name,DATE,DateUtils.toSQLDate(value));
+		return new Parameter(name,TIMESTAMP,value).setDateType(Enums.PARAMETER_DATE_TYPE.Util);
 	}
 	
 	/**
@@ -161,7 +167,7 @@ public class OracleParameterFactory
 	 */
 	public static Parameter dateInOutParameter(String name, Date value)
 	{
-		return new Parameter(name,DATE,Enums.PARAMETER_DIRECTION.IN_OUT,DateUtils.toSQLDate(value));
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.IN_OUT,value).setDateType(Enums.PARAMETER_DATE_TYPE.Util);
 	}
 	
 	/**
@@ -171,7 +177,7 @@ public class OracleParameterFactory
 	 */
 	public static Parameter dateOutParameter(String name)
 	{
-		return new Parameter(name,DATE,Enums.PARAMETER_DIRECTION.OUT);
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.OUT).setDateType(Enums.PARAMETER_DATE_TYPE.Util);
 	}
 	
 	/**
@@ -181,9 +187,119 @@ public class OracleParameterFactory
 	 */
 	public static Parameter dateReturnParameter(String name)
 	{
-		return new Parameter(name,DATE,Enums.PARAMETER_DIRECTION.RETURN);
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.RETURN).setDateType(Enums.PARAMETER_DATE_TYPE.Util);
 	}
-	
+
+	// -------------------------------------------------------------------------------------------------- //
+	// java.time
+	// -------------------------------------------------------------------------------------------------- //
+
+	/**
+	 * Creates a LocalDate parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDate);
+	}
+
+	/**
+	 * Creates a LocalDate parameter.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter localDateParameter(String name, LocalDate value)
+	{
+		return new Parameter(name,TIMESTAMP,value).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDate);
+	}
+
+	/**
+	 * Creates a LocalDate parameter in out direction.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter localDateInOutParameter(String name, LocalDate value)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.IN_OUT,value).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDate);
+	}
+
+	/**
+	 * Creates a LocalDate parameter out direction.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateOutParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.OUT).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDate);
+	}
+
+	/**
+	 * Creates an LocalDate function return parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateReturnParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.RETURN).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDate);
+	}
+
+	/**
+	 * Creates a LocalDateTime parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateTimeParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDateTime);
+	}
+
+	/**
+	 * Creates a LocalDateTime parameter.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter localDateTimeParameter(String name, LocalDateTime value)
+	{
+		return new Parameter(name,TIMESTAMP,value).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDateTime);
+	}
+
+	/**
+	 * Creates a LocalDateTime parameter in out direction.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter localDateTimeInOutParameter(String name, LocalDateTime value)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.IN_OUT,value).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDateTime);
+	}
+
+	/**
+	 * Creates a LocalDateTime parameter out direction.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateTimeOutParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.OUT).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDateTime);
+	}
+
+	/**
+	 * Creates an LocalDateTime function return parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter localDateTimeReturnParameter(String name)
+	{
+		return new Parameter(name,TIMESTAMP,Enums.PARAMETER_DIRECTION.RETURN).setDateType(Enums.PARAMETER_DATE_TYPE.LocalDateTime);
+	}
+
+	// -------------------------------------------------------------------------------------------------- //
+
 	/**
 	 * Creates a Number parameter.
 	 * @param name

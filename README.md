@@ -1,12 +1,21 @@
 # jdbc-made-easy
 Lightweight JDBC library for Java.
-
+This library tries to simplify classic JDBC API. 
+It features
+* named parameters
+* annotations for field mapping
+* mapping to nested properties
+* scalar queries
+* auto closing for ResultSet / PreparedStatement / CallableStatement
+* LOB handling
+* java.time API
+* fluent syntax.
 
 ## Purpose
-Simplified JDBC usage developed and tested on Oracle database.
+Simplified JDBC usage (developed and tested on Oracle database).
 
 ## Usage
-Examples given in src/test/OracleMainTestEasy.java.
+Examples given in src/test/OracleMainTestEasy.java. See wiki for more examples.
 
 ### Simple example
 
@@ -52,5 +61,3 @@ Invoke select:
             ).executeAsList();
 
 ```
-
-More examples to come.

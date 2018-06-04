@@ -1,6 +1,5 @@
 package ds.made.jdbc.easy.model;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -8,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -43,11 +43,23 @@ public class EasyDataTable
         return rows.stream();
     }
 
-    public Object[] getRow(int row) throws SomethingJustWrong
+    public Stream<EasyDataTableColumn> getColumnStream()
+    {
+        return Arrays.stream(columns);
+    }
+
+    public Object[] getRawRow(int row) throws SomethingJustWrong
     {
         if (row >= rows.size())
             throw new SomethingJustWrong("No such row!");
         return rows.get(row);
+    }
+
+    public EasyDataRow getRow(int row) throws SomethingJustWrong
+    {
+        if (row >= rows.size())
+            throw new SomethingJustWrong("No such row!");
+        return new EasyDataRow(rows.get(row));
     }
 
     public Object getField(int row, String columnName) throws SomethingJustWrong
@@ -171,7 +183,8 @@ public class EasyDataTable
             for (int idx = 1; idx <= rsmd.getColumnCount(); idx++)
             {
                 String name = rsmd.getColumnName(idx);
-                cols[idx-1] = new EasyDataTableColumn(name,rsmd.getColumnType(idx));
+                int zeroBasedIndex = idx - 1;
+                cols[zeroBasedIndex] = new EasyDataTableColumn(zeroBasedIndex, name,rsmd.getColumnType(idx));
             }
             return  cols;
         }

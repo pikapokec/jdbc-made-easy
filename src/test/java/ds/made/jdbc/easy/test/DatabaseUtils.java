@@ -13,7 +13,7 @@ public class DatabaseUtils
 	
 	private OracleConnectionPoolDataSource dataSource;
 	
-    public void createSource(String user, String password, String url) throws SQLException
+    public void createOracleSource(String user, String password, String url) throws SQLException
     {
         try
         {
@@ -45,6 +45,4 @@ public class DatabaseUtils
     	if (connection != null)
     		connection.close();
     }
-    
-	
 }

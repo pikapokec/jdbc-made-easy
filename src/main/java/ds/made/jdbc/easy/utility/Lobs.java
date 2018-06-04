@@ -70,10 +70,10 @@ public class Lobs
 		if (parameter == null)
 			return null;
 		
-		if (!(parameter.value instanceof java.sql.Blob))
+		if (!(parameter.getValue() instanceof java.sql.Blob))
 			throw new SQLException("Not a java.sql.Blob instance!");
 		
-		java.sql.Blob blob = (java.sql.Blob)parameter.value;
+		java.sql.Blob blob = (java.sql.Blob)parameter.getValue();
 		byte[] b = convertBlobToArray(blob);
 		blob.free();
 		return b;
@@ -130,10 +130,10 @@ public class Lobs
 		if (parameter == null)
 			return null;
 		
-		if (!(parameter.value instanceof java.sql.Clob))
+		if (!(parameter.getValue() instanceof java.sql.Clob))
 			throw new SQLException("Not a java.sql.Clob instance!");
 		
-		java.sql.Clob clob = (java.sql.Clob)parameter.value;
+		java.sql.Clob clob = (java.sql.Clob)parameter.getValue();
 		String c = convertClobToString(clob);
 		clob.free();
 		return c;
@@ -148,7 +148,7 @@ public class Lobs
 		} 
 		catch (IOException e)
 		{
-			logger.severe("Napaka pri zapiranju stream-a " + e.toString());
+			logger.severe("Error while closing the reader " + e.toString());
 		}
 	}
 	
@@ -161,7 +161,7 @@ public class Lobs
 		} 
 		catch (IOException e)
 		{
-			logger.severe("Napaka pri zapiranju stream-a " + e.toString());
+			logger.severe("Error while closing the input stream " + e.toString());
 		}
 	}
 	
@@ -174,7 +174,7 @@ public class Lobs
 		} 
 		catch (IOException e)
 		{
-			logger.severe("Napaka pri zapiranju stream-a " + e.toString());
+			logger.severe("Error while closing the output stream " + e.toString());
 		}
 	}
 	
@@ -191,7 +191,7 @@ public class Lobs
 		} 
 		catch (SQLException e)
 		{
-			logger.severe("Napaka pri zapiranju BLOB " + e.toString());
+			logger.severe("Error while closing the blob " + e.toString());
 		}
 	}
 	
@@ -208,7 +208,7 @@ public class Lobs
 		} 
 		catch (SQLException e)
 		{
-			logger.severe("Napaka pri zapiranju CLOB " + e.toString());
+			logger.severe("Error while closing the clob " + e.toString());
 		}
 	}
 	

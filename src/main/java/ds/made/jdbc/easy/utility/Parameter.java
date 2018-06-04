@@ -1,12 +1,14 @@
 package ds.made.jdbc.easy.utility;
 
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import ds.made.jdbc.easy.model.Enums;
 
 /**
  Parameter class that is mapped to a ? in a JDBC {@link Statement}.<br/>
- To use in {@link EasyCallForStoredProcedure} and in {@link EasyPreparedStatement}.
+ To use in {@link ../EasyCallForStoredProcedure} and in {@link ../EasyPreparedStatement}.
  For simplified usage please see {@link OracleParameterFactory}.
  @author ds
  */
@@ -15,7 +17,8 @@ public class Parameter
 	public final String name;
 	public final int type;
 	public Enums.PARAMETER_DIRECTION direction;
-	public Object value;
+	public Enums.PARAMETER_DATE_TYPE dateType = null;
+	private Object value;
 
 	public Parameter(String name, int type)
 	{
@@ -51,25 +54,107 @@ public class Parameter
 	{
 		return (value == null);
 	}
-	
+
+	public Object getValueForExecute()
+	{
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+				return value;
+
+			switch (dateType)
+			{
+				case Util:
+					return DateUtils.toSQLDate((java.util.Date)value);
+				case LocalDate:
+					return DateUtils.toSQLDate((LocalDate) value);
+				case LocalDateTime:
+					return DateUtils.toSQLDate((LocalDateTime)value);
+				default:
+					break;
+			}
+		}
+		return value;
+	}
+
+	public void setValueOutDirection(Object value)
+	{
+		this.value = value;
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+			{
+				java.sql.Timestamp ts = (java.sql.Timestamp)value;
+				switch (dateType)
+				{
+					case Util:
+						value = DateUtils.toDate(ts);
+						break;
+					case LocalDate:
+						value = DateUtils.toLocalDate(ts);
+						break;
+					case LocalDateTime:
+						value = DateUtils.toLocalDateTime(ts);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 	public Parameter setValue(Object value)
 	{
 		this.value = value;
-		if (value != null)
+		if (value != null && dateType != null)
 		{
 			if (value instanceof java.util.Date)
-			{
-				java.util.Date d = (java.util.Date)value;
-				this.value = DateUtils.toSQLDate(d);
-			}
+				this.value = DateUtils.toSQLDate((java.util.Date)value);
+			else if (value instanceof LocalDate)
+				this.value = DateUtils.toSQLDate((LocalDate)value);
+			else if (value instanceof LocalDateTime)
+				this.value = DateUtils.toSQLDate((LocalDateTime)value);
 		}
 		return this;
 	}
-	
+
+	public Object getValue()
+	{
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+			{
+				java.sql.Timestamp ts = (java.sql.Timestamp)value;
+				switch (dateType)
+				{
+					case Util:
+						value = DateUtils.toDate(ts);
+						break;
+					case LocalDate:
+						value = DateUtils.toLocalDate(ts);
+						break;
+					case LocalDateTime:
+						value = DateUtils.toLocalDateTime(ts);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		return value;
+	}
+
 	public Parameter setDirection(Enums.PARAMETER_DIRECTION direction)
 	{
 		this.direction = direction;
 		return this;
+	}
+
+	public Parameter setDateType(Enums.PARAMETER_DATE_TYPE dateType)
+	{
+		this.dateType = dateType;
+		return  this;
 	}
 
 	@Override

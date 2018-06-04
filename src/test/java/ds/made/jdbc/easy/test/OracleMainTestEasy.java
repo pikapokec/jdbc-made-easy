@@ -13,10 +13,7 @@ import java.util.Properties;
 
 import ds.made.jdbc.easy.EasyCallForStoredProcedure;
 import ds.made.jdbc.easy.EasyPreparedStatement;
-import ds.made.jdbc.easy.model.EasyDataTable;
-import ds.made.jdbc.easy.model.EasyStatementNoSingleObject;
-import ds.made.jdbc.easy.model.Enums;
-import ds.made.jdbc.easy.model.SomethingJustWrong;
+import ds.made.jdbc.easy.model.*;
 import ds.made.jdbc.easy.utility.EasyColumnClassFieldFactory;
 import ds.made.jdbc.easy.utility.Lobs;
 import ds.made.jdbc.easy.utility.OracleParameterFactory;
@@ -54,11 +51,13 @@ public class OracleMainTestEasy
 			Properties prop = new Properties();
 			prop.load(stream);
 
-			u.createSource(prop.getProperty("username"), prop.getProperty("password"), prop.getProperty("url"));
+			u.createOracleSource(prop.getProperty("username"), prop.getProperty("password"), prop.getProperty("url"));
 			c = u.newConnection();
 			OracleMainTestEasy m = new OracleMainTestEasy(c);
 
 			m.functionInOutCursor();
+			m.functionInOutCursorLocalDate();
+			m.functionInOutCursorLocalDateTime();
 			m.functionInOutCursorNoAnnotations();
 
 			m.procedureInOutCursor();
@@ -116,7 +115,7 @@ public class OracleMainTestEasy
 		Parameter outNumber = OracleParameterFactory.numberOutParameter("outNumber");
 		Parameter outText = OracleParameterFactory.stringOutParameter("outText");
 		Parameter outDate = OracleParameterFactory.dateOutParameter("outDate");
-		
+
 		List<TestEntity> lst = new EasyCallForStoredProcedure<>(
 				"pckTestEasyJDBC.F_RefCursor",
 				connection,
@@ -129,13 +128,83 @@ public class OracleMainTestEasy
 				cursor)
 				.executeAsList(cursor);
 		
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 		
+		for (TestEntity a : lst)
+			System.out.println("\t"+a);
+	}
+
+	private void functionInOutCursorLocalDate() throws SomethingJustWrong
+	{
+		System.out.println("\n\nfunctionInOutCursorLocalDate");
+
+		Parameter cursor = OracleParameterFactory.cursorReturnParameter("cursor");
+		Parameter inoutNumber = OracleParameterFactory.numberInOutParameter("inoutNumber", BigDecimal.ONE);
+		Parameter inoutText = OracleParameterFactory.stringInOutParameter("inoutText", "blah blah blah!");
+		Parameter inoutDate = OracleParameterFactory.localDateInOutParameter("inoutDate", LocalDate.now());
+		Parameter outNumber = OracleParameterFactory.numberOutParameter("outNumber");
+		Parameter outText = OracleParameterFactory.stringOutParameter("outText");
+		Parameter outDate = OracleParameterFactory.localDateOutParameter("outDate");
+
+		List<TestEntity> lst = new EasyCallForStoredProcedure<>(
+				"pckTestEasyJDBC.F_RefCursor",
+				connection,
+				TestEntity.class,
+				OracleParameterFactory.numberParameter("inNumber",BigDecimal.ONE),
+				OracleParameterFactory.stringParameter("inText","It is a test!"),
+				OracleParameterFactory.localDateParameter("inDate", LocalDate.now()),
+				inoutNumber,inoutText,inoutDate,
+				outNumber, outText, outDate,
+				cursor)
+				.executeAsList(cursor);
+
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue() + " [" + inoutDate.getValue().getClass() + "]");
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue() + " [" + outDate.getValue().getClass() + "]");
+
+		for (TestEntity a : lst)
+			System.out.println("\t"+a);
+	}
+
+	private void functionInOutCursorLocalDateTime() throws SomethingJustWrong
+	{
+		System.out.println("\n\nfunctionInOutCursorLocalDateTime");
+
+		Parameter cursor = OracleParameterFactory.cursorReturnParameter("cursor");
+		Parameter inoutNumber = OracleParameterFactory.numberInOutParameter("inoutNumber", BigDecimal.ONE);
+		Parameter inoutText = OracleParameterFactory.stringInOutParameter("inoutText", "blah blah blah!");
+		Parameter inoutDate = OracleParameterFactory.localDateTimeInOutParameter("inoutDate", LocalDateTime.now());
+		Parameter outNumber = OracleParameterFactory.numberOutParameter("outNumber");
+		Parameter outText = OracleParameterFactory.stringOutParameter("outText");
+		Parameter outDate = OracleParameterFactory.localDateOutParameter("outDate");
+
+		List<TestEntity> lst = new EasyCallForStoredProcedure<>(
+				"pckTestEasyJDBC.F_RefCursor",
+				connection,
+				TestEntity.class,
+				OracleParameterFactory.numberParameter("inNumber",BigDecimal.ONE),
+				OracleParameterFactory.stringParameter("inText","It is a test!"),
+				OracleParameterFactory.localDateTimeParameter("inDate", LocalDateTime.now()),
+				inoutNumber,inoutText,inoutDate,
+				outNumber, outText, outDate,
+				cursor)
+				.executeAsList(cursor);
+
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue() + " [" + inoutDate.getValue().getClass() + "]");
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue() + " [" + outDate.getValue().getClass() + "]");
+
 		for (TestEntity a : lst)
 			System.out.println("\t"+a);
 	}
@@ -178,12 +247,12 @@ public class OracleMainTestEasy
 				cursor)
 				.executeAsList(cursor);
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 
 		for (TestEntity a : lst)
 			System.out.println("\t"+a);
@@ -222,12 +291,12 @@ public class OracleMainTestEasy
 				)
 				.executeAsList(cursor);
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 
 		for (TestEntity a : lst)
 			System.out.println("\t"+a);
@@ -265,12 +334,12 @@ public class OracleMainTestEasy
 				)
 				.executeAsList(cursor);
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 
 		for (TestSelectNestedOnce a : lst)
 			System.out.println("\t"+a);
@@ -308,12 +377,12 @@ public class OracleMainTestEasy
 				)
 				.executeAsList(cursor);
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 
 		for (TestSelectNestedTwice a : lst)
 			System.out.println("\t"+a);
@@ -351,12 +420,12 @@ public class OracleMainTestEasy
 				)
 				.executeAsList(cursor);
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
 
 		for (TestSelectNested a : lst)
 			System.out.println("\t"+a);
@@ -378,17 +447,17 @@ public class OracleMainTestEasy
 				  outText       out VarChar2,
 				  outDate       out Date) RETURN VarChar2;
 		 */
-		// Vhodi
+		// Inputs
 		Parameter inNumber = OracleParameterFactory.numberParameter("inNumber",BigDecimal.ONE);
 		Parameter inText = OracleParameterFactory.stringParameter("inText","It is a test!");
 		Parameter inDate = OracleParameterFactory.dateParameter("inDate",new Date());
 
-		// Vhodi izhodi
+		// Inputs Outputs
 		Parameter inoutNumber = OracleParameterFactory.numberInOutParameter("inoutNumber", BigDecimal.ONE);
 		Parameter inoutText = OracleParameterFactory.stringInOutParameter("inoutText", "bla bla bla!");
 		Parameter inoutDate = OracleParameterFactory.dateInOutParameter("inoutDate", new Date());
 		
-		// Izhodi
+		// Outputs
 		Parameter outNumber = OracleParameterFactory.numberOutParameter("outNumber");
 		Parameter outText = OracleParameterFactory.stringOutParameter("outText");
 		Parameter outDate = OracleParameterFactory.dateOutParameter("outDate");
@@ -404,13 +473,13 @@ public class OracleMainTestEasy
 				result)
 			.execute();
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
-		System.out.println("\tresult " + result.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
+		System.out.println("\tresult " + result.getValue());
 	}
 
 	private void procedure() throws SQLException
@@ -456,13 +525,13 @@ public class OracleMainTestEasy
 				result)
 				.execute();
 
-		System.out.println("\tinoutNumber " + inoutNumber.value);
-		System.out.println("\tinoutText " + inoutText.value);
-		System.out.println("\tinoutDate " + inoutDate.value);
-		System.out.println("\toutNumber " + outNumber.value);
-		System.out.println("\toutText " + outText.value);
-		System.out.println("\toutDate " + outDate.value);
-		System.out.println("\tresult " + result.value);
+		System.out.println("\tinoutNumber " + inoutNumber.getValue());
+		System.out.println("\tinoutText " + inoutText.getValue());
+		System.out.println("\tinoutDate " + inoutDate.getValue());
+		System.out.println("\toutNumber " + outNumber.getValue());
+		System.out.println("\toutText " + outText.getValue());
+		System.out.println("\toutDate " + outDate.getValue());
+		System.out.println("\tresult " + result.getValue());
 	}
 	
 	private void testSelect() throws SomethingJustWrong
@@ -605,26 +674,43 @@ public class OracleMainTestEasy
 	{
 		System.out.println("\n\ntestDataTable");
 		EasyDataTable table = new EasyPreparedStatement<EasyDataTable>(
-				"Select * From TABLE(pckTestEasyJDBC.GetTestForSelect(:string,:date,:integer))",
+				"SELECT SOME_STRING, JUST_DATE, SOME_INTEGER, CURRENCY, STATUS, TS\n" +
+						"From TEST_4_SELECT \n" +
+						"Where (SOME_STRING=:inString or JUST_DATE=:inDate or SOME_INTEGER=:inInteger) \n" +
+						"Order By 1",
 				connection,
 				EasyDataTable.class,
-				OracleParameterFactory.stringParameter("string").setValue("A"),
-				OracleParameterFactory.dateParameter("date").setValue(new Date()),
-				OracleParameterFactory.decimalParameter("integer").setValue(BigDecimal.ZERO)
+				OracleParameterFactory.stringParameter("inString").setValue("A"),
+				OracleParameterFactory.dateParameter("inDate").setValue(LocalDate.now()),
+				OracleParameterFactory.decimalParameter("inInteger").setValue(BigDecimal.ZERO)
 		).dataTable();
 
         System.out.println("Data:");
 		for (int row = 0; row < table.size(); row++)
 		{
-			Object[] record = table.getRow(row);
+			Object[] record = table.getRawRow(row);
 			for (int idx = 0; idx < record.length; idx++)
 				System.out.print("\t" + table.columns[idx].name + "=" + record[idx] + " [" + table.columns[idx].clazz.getSimpleName() + "];");
+			System.out.println();
+		}
+
+		System.out.println("Easy Data Row:");
+		for (int row = 0; row < table.size(); row++)
+		{
+			EasyDataRow record = table.getRow(row);
+			for (int idx = 0; idx < record.getData().length; idx++)
+				System.out.print("\t" + table.columns[idx].name + "=" + record.getData()[idx] + " [" + table.columns[idx].clazz.getSimpleName() + "];");
 			System.out.println();
 		}
 
         System.out.println("Stream:");
 		table.getStream().forEach(e ->
                 {
+					System.out.print("\tstream  ");
+                	table.getColumnStream().forEach(c -> System.out.print("\t" + c.name + "=" + e[c.position] + " [" + c.clazz.getSimpleName() + "];"));
+					System.out.println();
+
+					System.out.print("\tclassic ");
                     for (int idx = 0; idx < e.length; idx++)
                         System.out.print("\t" + table.columns[idx].name + "=" + e[idx] + " [" + table.columns[idx].clazz.getSimpleName() + "];");
                     System.out.println();

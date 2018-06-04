@@ -1,5 +1,6 @@
 package ds.made.jdbc.easy.utility;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -111,16 +112,34 @@ public class DateUtils
 		
 		return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);		
     }
-    
-    public static java.sql.Date toSQLDate(java.util.Date date)
+
+    public static java.sql.Timestamp toSQLDate(java.util.Date date)
     {
         if (date == null)
             return null;
 
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        return sqlDate;
+        java.sql.Timestamp sqlTime = new java.sql.Timestamp(date.getTime());
+        return sqlTime;
     }
-    
+
+    public static java.sql.Timestamp toSQLDate(LocalDate localDate)
+    {
+        if (localDate == null)
+            return null;
+
+        java.sql.Timestamp sqlTime = Timestamp.valueOf(localDate.atStartOfDay());
+        return sqlTime;
+    }
+
+    public static java.sql.Timestamp toSQLDate(LocalDateTime localDateTime)
+    {
+        if (localDateTime == null)
+            return null;
+
+        java.sql.Timestamp sqlTime = Timestamp.valueOf(localDateTime);
+        return sqlTime;
+    }
+
 	public static String formatDate(Date date, String format, String emptyDate) 
 	{
         if (date == null)

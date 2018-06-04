@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -183,6 +185,28 @@ public class NamedParameterPreparedStatement
         if (date != null)
         {
             ts = new Timestamp(date.getTime());
+            setTimestamp(name, ts);
+        }
+        setTimestamp(name, ts);
+    }
+
+    public void setLocalDate(String name, LocalDate date) throws SQLException
+    {
+        java.sql.Timestamp ts = null;
+        if (date != null)
+        {
+            ts = DateUtils.toSQLDate(date);
+            setTimestamp(name, ts);
+        }
+        setTimestamp(name, ts);
+    }
+
+    public void setLocalDateTime(String name, LocalDateTime date) throws SQLException
+    {
+        java.sql.Timestamp ts = null;
+        if (date != null)
+        {
+            ts = DateUtils.toSQLDate(date);
             setTimestamp(name, ts);
         }
         setTimestamp(name, ts);

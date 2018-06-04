@@ -25,7 +25,7 @@ import ds.made.jdbc.easy.utility.Parameter;
  * Can be used for procedures / functions with in out / out parameters. Use Object for generic and Object.class for class type. 
  * @author ds
  *
- * @param <T> Any simple {@link EasyRow} / {@link EasyColumn} annotated class or Object.class.
+ * @param <T> Any simple {@link EasyRow} / {@link ./annotatons/EasyColumn} annotated class or Object.class.
  */
 public class EasyCallForStoredProcedure<T>
 {
@@ -183,7 +183,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			call = new NamedParameterCallableStatement(connection,command);
 			executeInternal(call);
-			rs = (ResultSet)cursor.value;
+			rs = (ResultSet)cursor.getValue();
 			mapper = new MapResultSet<T>(clazz, annotations, rs);
 			mapper.setRowLimit(rowLimit);
 			if (offset != null && count != null)
@@ -257,7 +257,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			call = new NamedParameterCallableStatement(connection,command);
 			executeInternal(call);
-			rs = (ResultSet)cursor.value;
+			rs = (ResultSet)cursor.getValue();
 			mapper = new MapResultSet<T>(clazz, rs);
 			return mapper.mapSingleColumn();
 		}
@@ -300,7 +300,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			call = new NamedParameterCallableStatement(connection,command);
 			executeInternal(call);
-			rs = (ResultSet)cursor.value;
+			rs = (ResultSet)cursor.getValue();
 			mapper = new MapResultSet<T>(clazz, nonAnnotatedFileds, rs);
 			mapper.setRowLimit(rowLimit);
 			return mapper.map();
@@ -342,7 +342,7 @@ public class EasyCallForStoredProcedure<T>
 				switch (p.direction)
 				{
 					case IN:
-						call.setObject(p.name, p.value);
+						call.setObject(p.name, p.getValueForExecute());
 						break;
 
 					case OUT:
@@ -351,7 +351,7 @@ public class EasyCallForStoredProcedure<T>
 						
 					case IN_OUT:
 						call.registerOutParameter(p.name, p.type);
-						call.setObject(p.name, p.value);
+						call.setObject(p.name, p.getValueForExecute());
 						break;
 						
 					case RETURN:
@@ -373,7 +373,7 @@ public class EasyCallForStoredProcedure<T>
 					case OUT:
 					case IN_OUT:
 					case RETURN:
-						p.value = call.getObject(p.name);
+						p.setValueOutDirection(call.getObject(p.name));
 						break;
 						
 					default:

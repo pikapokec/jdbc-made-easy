@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +54,7 @@ public class NamedParameterCallableStatement
      * c.{@link Connection#prepareStatement(java.lang.String) prepareStatement}.
      *
      * @param connection the database connection
-     * @param query the parameterized query
+     * @param command the parameterized query
      * @throws SQLException if the statement could not be created
      */
     public NamedParameterCallableStatement(Connection connection, String command) throws
@@ -189,6 +191,28 @@ public class NamedParameterCallableStatement
         setTimestamp(name, ts);
     }
 
+    public void setLocalDate(String name, LocalDate date) throws SQLException
+    {
+        java.sql.Timestamp ts = null;
+        if (date != null)
+        {
+            ts = DateUtils.toSQLDate(date);
+            setTimestamp(name, ts);
+        }
+        setTimestamp(name, ts);
+    }
+
+    public void setLocalDateTime(String name, LocalDateTime date) throws SQLException
+    {
+        java.sql.Timestamp ts = null;
+        if (date != null)
+        {
+            ts = DateUtils.toSQLDate(date);
+            setTimestamp(name, ts);
+        }
+        setTimestamp(name, ts);
+    }
+
     public void setBigDecimal(String name, BigDecimal value) throws SQLException
     {
         int[] indexes = getIndexes(name);
@@ -237,7 +261,7 @@ public class NamedParameterCallableStatement
     /**
      * Easy call for setting CLOB value.<br/>
      * <b>WARNING! Closing on statement.close() or (in a loop) explicitly with closeAllBlobsAndClobs()!</b>
-     * @param parameter name
+     * @param name parameter name
      * @param value clob value
      * @throws SQLException
      */
@@ -314,7 +338,25 @@ public class NamedParameterCallableStatement
         else
             return null;
     }
-    
+
+    public LocalDate getLocalDate(String name) throws SQLException
+    {
+        int[] indexes = getIndexes(name);
+        if (indexes.length > 0)
+            return DateUtils.toLocalDate(statement.getTimestamp(indexes[0]));
+        else
+            return null;
+    }
+
+    public LocalDateTime getLocalDateTime(String name) throws SQLException
+    {
+        int[] indexes = getIndexes(name);
+        if (indexes.length > 0)
+            return DateUtils.toLocalDateTime(statement.getTimestamp(indexes[0]));
+        else
+            return null;
+    }
+
     public void registerOutParameter(String name, int type) throws SQLException
     {
         int[] indexes = getIndexes(name);

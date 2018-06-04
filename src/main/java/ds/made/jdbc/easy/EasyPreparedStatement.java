@@ -391,7 +391,7 @@ public class EasyPreparedStatement<T>
 				switch (p.direction)
 				{
 					case IN:
-						statement.setObject(p.name, p.value);
+						statement.setObject(p.name, p.getValueForExecute());
 						break;
 						
 					default:
