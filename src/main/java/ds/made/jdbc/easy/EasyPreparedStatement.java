@@ -388,7 +388,7 @@ public class EasyPreparedStatement<T>
 		{
 			for (Parameter p : parameters)
 			{
-				switch (p.direction)
+				switch (p.getDirection())
 				{
 					case IN:
 						statement.setObject(p.name, p.getValueForExecute());

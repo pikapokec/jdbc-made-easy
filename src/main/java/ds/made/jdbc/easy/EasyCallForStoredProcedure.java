@@ -51,7 +51,7 @@ public class EasyCallForStoredProcedure<T>
 	 * @param storedName SQL stored procedure
 	 * @param connection Database connection
 	 */
-	public EasyCallForStoredProcedure(String storedName,Connection connection)
+	public EasyCallForStoredProcedure(String storedName,Connection connection) throws SomethingJustWrong
 	{
 		this.storedName = storedName;
 		this.parameters = null;
@@ -66,7 +66,7 @@ public class EasyCallForStoredProcedure<T>
 	 * @param connection Database connection
 	 * @param parameters Bind variables / procedure parameters
 	 */
-	public EasyCallForStoredProcedure(String storedName, Connection connection, Parameter... parameters)
+	public EasyCallForStoredProcedure(String storedName, Connection connection, Parameter... parameters) throws SomethingJustWrong
 	{
 		this.storedName = storedName;
 		this.parameters = parameters;
@@ -82,7 +82,7 @@ public class EasyCallForStoredProcedure<T>
 	 * @param clazz Annotated class
 	 * @param parameters Bind variables / procedure parameters
 	 */
-	public EasyCallForStoredProcedure(String storedName, Connection connection,Class<T> clazz, Parameter... parameters)
+	public EasyCallForStoredProcedure(String storedName, Connection connection,Class<T> clazz, Parameter... parameters) throws SomethingJustWrong
 	{
 		this.storedName = storedName;
 		this.parameters = parameters;
@@ -198,7 +198,7 @@ public class EasyCallForStoredProcedure<T>
 		}
 		catch (SomethingJustWrong sjw)
 		{
-			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + (mapper == null ? "" : mapper.getLastFieldName()), sjw);
+			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + mapper.getLastFieldName(), sjw);
 			throw sjw;
 		}
 		catch (SQLException se)
@@ -268,7 +268,7 @@ public class EasyCallForStoredProcedure<T>
 		}
 		catch (SomethingJustWrong sjw)
 		{
-			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + (mapper == null ? "" : mapper.getLastFieldName()), sjw);
+			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + mapper.getLastFieldName(), sjw);
 			throw sjw;
 		}
 		catch (SQLException se)
@@ -312,7 +312,7 @@ public class EasyCallForStoredProcedure<T>
 		}
 		catch (SomethingJustWrong sjw)
 		{
-			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + (mapper == null ? "" : mapper.getLastFieldName()), sjw);
+			MYLOGGER.log(Level.SEVERE, "Critical error executing or reading cursor: " + mapper.getLastFieldName(), sjw);
 			throw sjw;
 		}
 		catch (SQLException se)
@@ -339,7 +339,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			for (Parameter p : parameters)
 			{
-				switch (p.direction)
+				switch (p.getDirection())
 				{
 					case IN:
 						call.setObject(p.name, p.getValueForExecute());
@@ -368,7 +368,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			for (Parameter p : parameters)
 			{
-				switch (p.direction)
+				switch (p.getDirection())
 				{
 					case OUT:
 					case IN_OUT:
@@ -385,7 +385,7 @@ public class EasyCallForStoredProcedure<T>
 		return b;
 	}
 	
-	private Enums.STORED_PROCEDURE_TYPE analyzeAndPrepare()
+	private Enums.STORED_PROCEDURE_TYPE analyzeAndPrepare() throws SomethingJustWrong
 	{
 		StringBuilder sbParams = new StringBuilder();
 		Enums.STORED_PROCEDURE_TYPE t = Enums.STORED_PROCEDURE_TYPE.PROCEDURE;
@@ -395,7 +395,7 @@ public class EasyCallForStoredProcedure<T>
 		{
 			for (Parameter p : parameters)
 			{
-				if (p.direction == Enums.PARAMETER_DIRECTION.RETURN)
+				if (p.getDirection() == Enums.PARAMETER_DIRECTION.RETURN)
 				{
 					t = Enums.STORED_PROCEDURE_TYPE.FUNCTION;
 					returnParameter = p;
@@ -412,6 +412,8 @@ public class EasyCallForStoredProcedure<T>
 		switch (t)
 		{
 			case FUNCTION:
+				if (returnParameter == null)
+					throw new SomethingJustWrong("ReturnParameter is empty! No function call can be made!");
 				command = "{:" + returnParameter.name + " = call " + storedName + "(" + sbParams.toString() + ")}";
 				break;
 

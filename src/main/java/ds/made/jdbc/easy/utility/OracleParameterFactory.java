@@ -134,6 +134,58 @@ public class OracleParameterFactory
 		return new Parameter(name,INTEGER,Enums.PARAMETER_DIRECTION.RETURN);
 	}
 
+	/**
+	 * Creates an Long parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter longParameter(String name)
+	{
+		return new Parameter(name,INTEGER);
+	}
+
+	/**
+	 * Creates an Long parameter.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter longParameter(String name, Long value)
+	{
+		return new Parameter(name,INTEGER,value);
+	}
+
+	/**
+	 * Creates an Long parameter in out direction.
+	 * @param name
+	 * @param value
+	 * @return Parameter
+	 */
+	public static Parameter longInOutParameter(String name, Long value)
+	{
+		return new Parameter(name,INTEGER,Enums.PARAMETER_DIRECTION.IN_OUT,value);
+	}
+
+	/**
+	 * Creates an Long parameter out direction.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter longOutParameter(String name)
+	{
+		return new Parameter(name,INTEGER,Enums.PARAMETER_DIRECTION.OUT);
+	}
+
+	/**
+	 * Creates an Long function return parameter.
+	 * @param name
+	 * @return Parameter
+	 */
+	public static Parameter longReturnParameter(String name)
+	{
+		return new Parameter(name,INTEGER,Enums.PARAMETER_DIRECTION.RETURN);
+	}
+
 	// -------------------------------------------------------------------------------------------------- //
 	// java.util.Date
 	// -------------------------------------------------------------------------------------------------- //

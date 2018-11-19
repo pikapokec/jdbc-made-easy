@@ -75,7 +75,8 @@ public class Lobs
 		
 		java.sql.Blob blob = (java.sql.Blob)parameter.getValue();
 		byte[] b = convertBlobToArray(blob);
-		blob.free();
+		if (blob != null)
+			blob.free();
 		return b;
 	}
 	
@@ -135,7 +136,8 @@ public class Lobs
 		
 		java.sql.Clob clob = (java.sql.Clob)parameter.getValue();
 		String c = convertClobToString(clob);
-		clob.free();
+		if (clob != null)
+			clob.free();
 		return c;
 	}
 	

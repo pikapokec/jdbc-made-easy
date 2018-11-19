@@ -431,7 +431,7 @@ public class OracleMainTestEasy
 			System.out.println("\t"+a);
 	}
 
-	private void function() throws SQLException
+	private void function() throws SQLException, SomethingJustWrong
 	{
 		System.out.println("\n\nfunction");
 
@@ -482,7 +482,7 @@ public class OracleMainTestEasy
 		System.out.println("\tresult " + result.getValue());
 	}
 
-	private void procedure() throws SQLException
+	private void procedure() throws SQLException, SomethingJustWrong
 	{
 		System.out.println("\n\nprocedure");
 

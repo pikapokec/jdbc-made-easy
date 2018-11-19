@@ -1,10 +1,12 @@
 package ds.made.jdbc.easy.utility;
 
+import java.math.BigDecimal;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ds.made.jdbc.easy.model.Enums;
+import ds.made.jdbc.easy.model.ParameterCastException;
 
 /**
  Parameter class that is mapped to a ? in a JDBC {@link Statement}.<br/>
@@ -16,8 +18,8 @@ public class Parameter
 {
 	public final String name;
 	public final int type;
-	public Enums.PARAMETER_DIRECTION direction;
-	public Enums.PARAMETER_DATE_TYPE dateType = null;
+	private Enums.PARAMETER_DIRECTION direction;
+	private Enums.PARAMETER_DATE_TYPE dateType = null;
 	private Object value;
 
 	public Parameter(String name, int type)
@@ -145,10 +147,118 @@ public class Parameter
 		return value;
 	}
 
+	public String getStringValue() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value instanceof String)
+			return (String)value;
+
+		throw new ParameterCastException("Not a String instance!");
+	}
+
+	public Integer getIntegerValue() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value instanceof Integer)
+			return (Integer)value;
+
+		throw new ParameterCastException("Not an Integer instance!");
+	}
+
+	public Long getLongValue() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value instanceof Long)
+			return (Long)value;
+
+		throw new ParameterCastException("Not a Long instance!");
+	}
+
+	public BigDecimal getBigDecimalValue() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value instanceof BigDecimal)
+			return (BigDecimal)value;
+
+		throw new ParameterCastException("Not a BigDecimal instance!");
+	}
+
+	public java.util.Date getUtilDate() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+			{
+				java.sql.Timestamp ts = (java.sql.Timestamp)value;
+				if (dateType == Enums.PARAMETER_DATE_TYPE.Util)
+					return DateUtils.toDate(ts);
+			}
+		}
+
+		throw new ParameterCastException("Not a java.util.Date instance!");
+	}
+
+	public LocalDate getLocalDate() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+			{
+				java.sql.Timestamp ts = (java.sql.Timestamp)value;
+				if (dateType == Enums.PARAMETER_DATE_TYPE.LocalDate)
+					return DateUtils.toLocalDate(ts);
+			}
+		}
+
+		throw new ParameterCastException("Not a LocalDate instance!");
+	}
+
+	public LocalDateTime getLocalDateTime() throws ParameterCastException
+	{
+		if (value == null)
+			return null;
+
+		if (value != null && dateType != null)
+		{
+			if (value instanceof java.sql.Timestamp)
+			{
+				java.sql.Timestamp ts = (java.sql.Timestamp)value;
+				if (dateType == Enums.PARAMETER_DATE_TYPE.LocalDateTime)
+					return DateUtils.toLocalDateTime(ts);
+			}
+		}
+
+		throw new ParameterCastException("Not a LocalDateTime instance!");
+	}
+
+	public Enums.PARAMETER_DIRECTION getDirection()
+	{
+		return direction;
+	}
+
 	public Parameter setDirection(Enums.PARAMETER_DIRECTION direction)
 	{
 		this.direction = direction;
 		return this;
+	}
+
+	public Enums.PARAMETER_DATE_TYPE getDateType(Enums.PARAMETER_DATE_TYPE dateType)
+	{
+		return dateType;
 	}
 
 	public Parameter setDateType(Enums.PARAMETER_DATE_TYPE dateType)
