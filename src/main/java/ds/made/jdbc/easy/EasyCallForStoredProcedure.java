@@ -405,8 +405,9 @@ public class EasyCallForStoredProcedure<T>
 					sbParams.append(",:" + p.name);
 				}
 			}
-			
-			sbParams.deleteCharAt(0);
+
+			if (sbParams.length() > 0)
+				sbParams.deleteCharAt(0);
 		}
 		
 		switch (t)

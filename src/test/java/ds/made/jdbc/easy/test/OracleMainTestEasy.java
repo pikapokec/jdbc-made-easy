@@ -93,8 +93,22 @@ public class OracleMainTestEasy
 	
 	private void functionInOutCursor() throws SomethingJustWrong
 	{
+		System.out.println("\n\nfunctionCursor");
+
+		// Function F_RefCursor RETURN SYS_REFCURSOR Is
+		Parameter kursor = OracleParameterFactory.cursorReturnParameter("kursor");
+		List<TestEntity> lst = new EasyCallForStoredProcedure<>(
+				"pckTestEasyJDBC.F_RefCursor",
+				connection,
+				TestEntity.class,
+				kursor)
+				.executeAsList(kursor);
+		for (TestEntity a : lst)
+			System.out.println("\t"+a);
+
+
 		System.out.println("\n\nfunctionInOutCursor");
-		
+
 		/*
 		  Function F_RefCursor(
 				  inNumber      in Number,
@@ -116,7 +130,7 @@ public class OracleMainTestEasy
 		Parameter outText = OracleParameterFactory.stringOutParameter("outText");
 		Parameter outDate = OracleParameterFactory.dateOutParameter("outDate");
 
-		List<TestEntity> lst = new EasyCallForStoredProcedure<>(
+		lst = new EasyCallForStoredProcedure<>(
 				"pckTestEasyJDBC.F_RefCursor",
 				connection,
 				TestEntity.class,

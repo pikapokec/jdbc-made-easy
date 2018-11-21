@@ -7,7 +7,7 @@
   <groupId>jdbc.made.easy</groupId>
   <artifactId>jdbc-made-easy</artifactId>
 
-  <version>0.8.1.0</version>
+  <version>0.8.1.1</version>
     <build>
         <plugins>
             <plugin>
