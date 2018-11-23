@@ -106,6 +106,15 @@ public class OracleMainTestEasy
 		for (TestEntity a : lst)
 			System.out.println("\t"+a);
 
+		System.out.println("\n\nfunctionCursor - executeCursorAsList");
+		lst = new EasyCallForStoredProcedure<>(
+				"pckTestEasyJDBC.F_RefCursor",
+				connection,
+				TestEntity.class,
+				OracleParameterFactory.cursorReturnParameter("kursor"))
+				.executeCursorAsList();
+		for (TestEntity a : lst)
+			System.out.println("\t"+a);
 
 		System.out.println("\n\nfunctionInOutCursor");
 

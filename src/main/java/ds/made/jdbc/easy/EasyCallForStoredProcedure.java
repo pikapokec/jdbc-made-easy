@@ -138,6 +138,32 @@ public class EasyCallForStoredProcedure<T>
 	}
 
 	/**
+	 * First cursor parameter to result List<T> mapping.
+	 * @return List<T> class instances
+	 * @throws SomethingJustWrong
+	 */
+	public List<T> executeCursorAsList() throws SomethingJustWrong
+	{
+		Parameter cursor = null;
+		if (parameters != null)
+		{
+			for (Parameter p : parameters)
+			{
+				if (p.getDirection() == Enums.PARAMETER_DIRECTION.RETURN)
+				{
+					cursor = p;
+					break;
+				}
+			}
+		}
+
+		if (cursor == null)
+			throw new SomethingJustWrong("Cannot find cursor parameter!");
+
+		return executeAsList(cursor,null,null);
+	}
+
+	/**
 	 * {@link NamedParameterCallableStatement} (CallableStatement) execute; cursor result to List<T> mapping.
 	 * @param cursor Cursor parameter
 	 * @return List<T> class instances
