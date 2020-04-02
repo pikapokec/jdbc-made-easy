@@ -141,7 +141,7 @@ public class EasyDataTable
                 Object o = resultset.getObject(idx+1);
                 if (resultset.wasNull())
                     o = null;
-                items[idx] = o;
+                items[idx] = mapSQLTypes(o);
             }
         }
     }
@@ -169,7 +169,7 @@ public class EasyDataTable
                 Object o = resultset.getObject(idx+1);
                 if (resultset.wasNull())
                     o = null;
-                items[idx] = o;
+                items[idx] = mapSQLTypes(o);
             }
         }
     }
@@ -194,5 +194,20 @@ public class EasyDataTable
         }
     }
 
+    private Object mapSQLTypes(Object o)
+    {
+        if (o == null)
+            return null;
 
+        if (o instanceof java.sql.Timestamp)
+            return ((java.sql.Timestamp)o).toLocalDateTime();
+
+        if (o instanceof java.sql.Date)
+            return ((java.sql.Date)o).toLocalDate();
+
+        if (o instanceof java.sql.Time)
+            return ((java.sql.Time)o).toLocalTime();
+
+        return o;
+    }
 }

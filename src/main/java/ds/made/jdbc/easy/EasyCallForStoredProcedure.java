@@ -368,6 +368,7 @@ public class EasyCallForStoredProcedure<T>
 				switch (p.getDirection())
 				{
 					case IN:
+
 						call.setObject(p.name, p.getValueForExecute());
 						break;
 

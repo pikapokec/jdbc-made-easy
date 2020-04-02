@@ -1,8 +1,11 @@
 package ds.made.jdbc.easy.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -10,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import ds.made.jdbc.easy.EasyCallForStoredProcedure;
 import ds.made.jdbc.easy.EasyPreparedStatement;
@@ -21,6 +26,8 @@ import ds.made.jdbc.easy.utility.Parameter;
 
 public class OracleMainTestEasy
 {
+
+	private static final char C_ABTSep = (char)3;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -55,6 +62,7 @@ public class OracleMainTestEasy
 			c = u.newConnection();
 			OracleMainTestEasy m = new OracleMainTestEasy(c);
 
+			/*
 			m.functionInOutCursor();
 			m.functionInOutCursorLocalDate();
 			m.functionInOutCursorLocalDateTime();
@@ -74,7 +82,14 @@ public class OracleMainTestEasy
 
 			m.testScalar();
 
+			*/
 			m.testDataTable();
+
+			/*
+			String xml1 = vsebinaDatoteke("VelikXML1.xml");
+			String xml2 = vsebinaDatoteke("VelikXML2.xml");
+			m.testABTFields(xml1,xml2);
+			 */
 		}
 		finally
 		{
@@ -83,7 +98,18 @@ public class OracleMainTestEasy
 				stream.close();
 		}
 	}
-	
+
+	private static String vsebinaDatoteke(String imeresursa)
+	{
+		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(imeresursa);
+		if (is != null)
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+			return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+		}
+		return null;
+	}
+
 	private Connection connection;
 	
 	public OracleMainTestEasy(Connection connection)
@@ -745,6 +771,89 @@ public class OracleMainTestEasy
 
         BigDecimal bd = table.getBigDecimal(0,"CURRENCY");
 		System.out.println("Record 0, field CURRENCY: " + bd);
+	}
+
+	private void testABTFields(String xmlIN, String xmlOUT) throws SomethingJustWrong, SQLException, IOException
+	{
+		Parameter aDataIn = new Parameter("aDataIn", OracleParameterFactory.CLOB, Enums.PARAMETER_DIRECTION.IN);
+		aDataIn.setValue(abtfildi(null,"OUT"));
+		Parameter aXml = new Parameter("aXml", OracleParameterFactory.CLOB, Enums.PARAMETER_DIRECTION.IN);
+		aXml.setValue(xmlOUT);
+
+		Parameter aIdNapake = OracleParameterFactory.stringOutParameter("aIdNapake");
+		Parameter aNapaka = OracleParameterFactory.stringOutParameter("aNapaka");
+		Parameter aDataOut = new Parameter("aDataOut", OracleParameterFactory.CLOB, Enums.PARAMETER_DIRECTION.OUT);
+
+		new EasyCallForStoredProcedure<Object>(
+				"SKUPNO.WSP_Log",
+				connection,
+				Object.class,
+				aDataIn, aXml,
+				aIdNapake,
+				aNapaka,
+				aDataOut)
+				.execute();
+
+		String dataOut = Lobs.convertClobParameterToStringAndFree(aDataOut);
+		System.out.println("aIdNapake: " + aIdNapake);
+		System.out.println("aNapaka: " + aNapaka);
+		System.out.println("dataOut: " + dataOut);
+
+		String tag = "<#IDLOG>=";
+		int iPos2 = dataOut.indexOf(C_ABTSep);
+		int iPos = dataOut.indexOf(tag);
+		if (iPos < 0 || iPos2 < 0)
+			return;
+
+		iPos += tag.length();
+		String idlog = dataOut.substring(iPos, iPos2);
+		System.out.println("idlog: " + idlog);
+
+		aDataIn.setValue(abtfildi(idlog,"IN"));
+		aXml.setValue(xmlIN);
+
+		new EasyCallForStoredProcedure<Object>(
+				"SKUPNO.WSP_Log",
+				connection,
+				Object.class,
+				aDataIn, aXml,
+				aIdNapake,
+				aNapaka,
+				aDataOut)
+				.execute();
+
+		dataOut = Lobs.convertClobParameterToStringAndFree(aDataOut);
+		System.out.println("aIdNapake: " + aIdNapake);
+		System.out.println("aNapaka: " + aNapaka);
+		System.out.println("dataOut: " + dataOut);
+	}
+
+	private String abtfildi(String idlog, String smernost)
+	{
+		return
+				"<#IDLOG>=" + emptyIfNull(idlog) + C_ABTSep +
+						"<#SERVIS>=mediacija-bankart" + C_ABTSep +
+						"<#URL>=url" + C_ABTSep +
+						"<#ID1>=a" + C_ABTSep +
+						"<#ID2>=b" + C_ABTSep +
+						"<#ID3>=c" + C_ABTSep +
+						"<#OPIS>=test" + C_ABTSep +
+						"<#IMEMETODE>=test" + C_ABTSep +
+						"<#SMERNOST>=" + smernost + C_ABTSep +
+						"<#REFERENT>=" + C_ABTSep +
+						"<#PE>=" + C_ABTSep +
+						"<#RACUNALNIK>=test" + C_ABTSep +
+						"<#VIR>=test" + C_ABTSep +
+						"<#TIP>=XML";
+
+	}
+
+	private String emptyIfNull(String value)
+	{
+		if (value == null)
+			return "";
+		else
+			return value;
 	}
 
 }

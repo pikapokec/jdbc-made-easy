@@ -91,17 +91,23 @@ public class MapResultSet<T>
 	{
 		try
 		{
+			// Returns descriptors for all properties of the bean.
 			for(PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors())
+				// Gets the method that should be used to write the property value.
 				setters.put(pd.getName(), pd.getWriteMethod());
 			
 			ResultSetMetaData rsmd = resultset.getMetaData();
 			for (int idx = 1; idx <= rsmd.getColumnCount(); idx++)
 			{
+				// Database name
 				String name = rsmd.getColumnName(idx);
+				// Properties from constructor ... annotated fields
 				for (EasyColumnFieldData f : properties)
 				{
+					// If annotated name equals column name regardless of capitalising, then they are equal!
 					if (f.column.name().equalsIgnoreCase(name))
 					{
+						// Add this field to my property list
 						myPropertiesList.add(f);
 						break;
 					}

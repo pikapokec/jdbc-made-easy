@@ -7,7 +7,7 @@
   <groupId>jdbc.made.easy</groupId>
   <artifactId>jdbc-made-easy</artifactId>
 
-  <version>0.8.1.1</version>
+  <version>0.8.2.0</version>
     <build>
         <plugins>
             <plugin>
@@ -40,8 +40,8 @@
 
   <dependency>
     <groupId>com.oracle</groupId>
-    <artifactId>ojdbc6</artifactId>
-    <version>11.2.0.3.0</version>
+    <artifactId>ojdbc7</artifactId>
+    <version>12.1.0.1</version>
   </dependency>
 
   </dependencies>
