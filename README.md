@@ -62,6 +62,25 @@ Invoke select:
 
 ```
 
+### BLOB / CLOB
+
+```java
+        return new EasyPreparedStatement<>(
+                "select BLOB_COL from MY_TABLE where ID=:pID",
+                connection,
+                byte[].class,
+                OracleParameterFactory.longParameter("pID", template.getId())
+        ).blobScalar();
+
+        return new EasyPreparedStatement<>(
+                "select CLOB_COL from MY_TABLE where ID=:pID",
+                connection,
+                String.class,
+                OracleParameterFactory.longParameter("pID", template.getId())
+        ).clobScalar();
+
+```
+
 ### Export to Excel
 
 Use Apache POI.
