@@ -90,7 +90,7 @@ Use Apache POI.
         try (var workbook = new XSSFWorkbook())
         {
             // Create a sheet
-            var sheet = workbook.createSheet("Podatki");
+            var sheet = workbook.createSheet("My data");
 
             // Create header row
             Row headerRow = sheet.createRow(0);
