@@ -106,10 +106,10 @@ Use Apache POI.
     {
         var stream = new ByteArrayOutputStream();
 
-        try (var workbook = new XSSFWorkbook())
+        try (stream; var workbook = new XSSFWorkbook())
         {
             // Create a sheet
-            var sheet = workbook.createSheet("My data");
+            var sheet = workbook.createSheet("Podatki");
 
             // Create header row
             Row headerRow = sheet.createRow(0);
@@ -122,7 +122,7 @@ Use Apache POI.
             for (int rowIdx = 0; rowIdx < dataTable.size(); rowIdx++)
             {
                 // Add some data rows
-                Row excelRow = sheet.createRow(rowIdx+1);
+                Row excelRow = sheet.createRow(rowIdx + 1);
 
                 var row = dataTable.getRow(rowIdx);
                 var rawData = row.getData();
