@@ -20,7 +20,7 @@ Examples given in src/test/OracleMainTestEasy.java. See wiki for more examples.
 ### Simple example
 
 POJO with annotations
-```
+```java
 @EasyRow
 public class TestEntity
 {
@@ -50,7 +50,7 @@ public class TestEntity
 
 Invoke select:
 
-```
+```java
     List<TestEntity> lst = new EasyPreparedStatement<>(
             "Select * From TABLE(pckTestEasyJDBC.GetTestForSelect(:string,:date,:integer))",
             connection,
@@ -60,4 +60,105 @@ Invoke select:
             OracleParameterFactory.decimalParameter("integer").setValue(BigDecimal.ZERO)
             ).executeAsList();
 
+```
+
+### Export to Excel
+
+Use Apache POI.
+
+```java
+    public EasyDataTable executeQuery(String query) throws SomethingJustWrong
+    {
+        try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())
+        {
+            return new EasyPreparedStatement<>(
+                    query,
+                    connection,
+                    EasyDataTable.class
+            ).dataTable();
+        }
+        catch (Exception ex)
+        {
+            throw new SomethingJustWrong(ex);
+        }
+    }
+
+    public byte[] excel(EasyDataTable dataTable) throws Exception
+    {
+        var stream = new ByteArrayOutputStream();
+
+        try (var workbook = new XSSFWorkbook())
+        {
+            // Create a sheet
+            var sheet = workbook.createSheet("Podatki");
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            for (int colIdx = 0; colIdx < dataTable.columns.length; colIdx++)
+            {
+                EasyDataTableColumn column = dataTable.columns[colIdx];
+                headerRow.createCell(colIdx).setCellValue(column.name);
+            }
+
+            for (int rowIdx = 0; rowIdx < dataTable.size(); rowIdx++)
+            {
+                // Add some data rows
+                Row excelRow = sheet.createRow(rowIdx+1);
+
+                var row = dataTable.getRow(rowIdx);
+                var rawData = row.getData();
+
+                for (int colIdx = 0; colIdx < dataTable.columns.length; colIdx++)
+                {
+                    var cell = excelRow.createCell(colIdx);
+
+                    EasyDataTableColumn column = dataTable.columns[colIdx];
+                    var obj = rawData[colIdx];
+                    if (obj == null)
+                    {
+                        cell.setCellValue("");
+                        continue;
+                    }
+
+                    switch (column.sqlType)
+                    {
+                        case Types.VARCHAR:
+                            var s = (String) rawData[colIdx];
+                            cell.setCellValue(s);
+                            break;
+
+                        case Types.NUMERIC:
+                            var bd = (BigDecimal) rawData[colIdx];
+                            cell.setCellValue(bd.doubleValue());
+                            break;
+
+                        case Types.DATE:
+                            var ld = (LocalDate) rawData[colIdx];
+                            cell.setCellValue(ld);
+                            break;
+
+                        case Types.TIMESTAMP:
+                            var ldt = (LocalDateTime) rawData[colIdx];
+                            cell.setCellValue(ldt);
+                            break;
+
+                        default:
+                            var sobj = obj.toString();
+                            cell.setCellValue(sobj);
+                            break;
+                    }
+                }
+            }
+
+            // Autosize columns
+            for (int colIdx = 0; colIdx < dataTable.columns.length; colIdx++)
+            {
+                sheet.autoSizeColumn(colIdx);
+            }
+
+            workbook.write(stream);
+        }
+
+        return stream.toByteArray();
+    }
 ```
